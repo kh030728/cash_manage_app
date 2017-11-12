@@ -15,24 +15,13 @@
             android:id="@+id/ET_grpName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginRight="10dp"
             android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
             android:layout_weight="1"
             android:ems="10"
-            android:hint="모임 이름" />
-
-
-        <EditText
-            android:id="@+id/ET_grpBaseCash"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="10dp"
-            android:layout_marginLeft="10dp"
-            android:layout_weight="1"
-            android:ems="10"
-            android:hint="모임 기본금"
-            android:inputType="number" />
-
+            android:hint="모임 이름 (2글자 이상)"
+            android:maxLength="10"
+            android:singleLine="true"/>
     </LinearLayout>
 
 </android.support.constraint.ConstraintLayout>

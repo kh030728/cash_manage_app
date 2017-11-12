@@ -1,0 +1,43 @@
+//액션바 매뉴구성과 클릭
+@Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_grpadd:
+                LayoutInflater inflaterDialogGrp = getLayoutInflater();
+                final View viewDialogGrp = inflaterDialogGrp.inflate(R.layout.dialog_groupadd, null);
+                final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setTitle("모임 추가");
+                //builder.setIcon(android.R.drawable.sym_def_app_icon);
+                builder.setView(viewDialogGrp);
+                builder.setPositiveButton("생성", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        EditText ETtemp = (EditText) viewDialogGrp.findViewById(R.id.ET_grpName);
+                        grpName = ETtemp.getText().toString();
+                        if(grpName.length() < 2) {
+                            Toast.makeText(getApplicationContext(),"모임 이름을 두글자 이상으로 입력해 주세요",Toast.LENGTH_SHORT).show();
+                        }else {
+                            dbHelper.insertGrp(grpName);
+                            drawListView();
+                        }
+                    }
+                });
+                builder.setNegativeButton("취소", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                });
+                builder.show();
+                break;
+            default:
+                break;
+        }
+        return true;
+    }

@@ -58,7 +58,7 @@ public class GrpListViewAdapter extends BaseAdapter {
         GrpListData DTO = CustListData.get(position);
         holder.TVgrpName.setText(DTO.getGrpName());
         if(DTO.getGrpCash() < 0/*즉 음수라면*/) {
-            holder.TVgrpCash.setText("-"+DTO.getGrpCash() + "원");
+            holder.TVgrpCash.setText(DTO.getGrpCash() + "원");
         } else {
             holder.TVgrpCash.setText(DTO.getGrpCash() + "원");
         }
@@ -80,9 +80,7 @@ public class GrpListViewAdapter extends BaseAdapter {
         TextView TVgrpName;
         TextView TVgrpCash;
     }
-    public void addItem(GrpListData dto) {
-        CustListData.add(dto);
-    }
+    public void addItem(GrpListData dto) {        CustListData.add(dto);    }
 
 
 }

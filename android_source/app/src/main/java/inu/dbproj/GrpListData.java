@@ -12,7 +12,7 @@ package inu.dbproj;
 public class GrpListData {
     private String grpName;
     private int resId;
-    private int grpcash;
+    private int grpcash =10;
 
     public int getResId() {
         return resId;
