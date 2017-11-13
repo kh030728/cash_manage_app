@@ -18,14 +18,31 @@
             android:layout_margin="10dp"
             android:textColor="@android:color/black"
             android:gravity="right"/>
-        <TextView
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:text="모임 소속 인원"
-            android:textSize="25dp"
-            android:textColor="@android:color/black"
-            android:background="#AA88FF"
-            android:gravity="center"/>
+            android:layout_height="72dp"
+            android:orientation="horizontal"
+            android:background="#AAAAAA"
+            android:paddingEnd="16dp">
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="72dp"
+                android:gravity="center_vertical"
+                android:paddingStart="32dp"
+                android:text="모임 소속 인원"
+                android:textColor="@android:color/black"
+                android:textSize="24sp"
+                android:layout_weight="1"/>
+            <ImageButton
+                android:id="@+id/imgBtnUserAdd"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_user_add"
+                android:background="#00FF0000"
+                android:layout_gravity="center_vertical"/>
+        </LinearLayout>
+
+
         <ExpandableListView
             android:id="@+id/exlist_userlist_activity_grp_list"
             android:layout_width="match_parent"

@@ -1,5 +1,7 @@
 package inu.dbproj;
 
+import android.util.Log;
+
 import java.util.ArrayList;
 
 /**

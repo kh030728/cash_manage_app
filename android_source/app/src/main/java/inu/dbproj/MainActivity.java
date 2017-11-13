@@ -47,6 +47,7 @@ public class MainActivity extends AppCompatActivity {
 
         //데이터 베이스 생성
         dbHelper = new DBHelper(getApplicationContext());
+
         //리스트 연동
         drawListView();
         Log.v(getClass().getName(), "onCreate 종료");
@@ -74,12 +75,7 @@ public class MainActivity extends AppCompatActivity {
             String empty[] = {"그룹이 없습니다. 그룹을 추가하세요"};
             ArrayAdapter emptyAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, empty);
             grpListView.setAdapter(emptyAdapter);
-            grpListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-                }
-            });
+            grpListView.setOnItemClickListener(null);
         } else {
             grpadapter = null;
             grpadapter = new GrpListViewAdapter();

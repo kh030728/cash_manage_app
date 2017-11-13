@@ -9,19 +9,26 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
-
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="이름"
+            android:paddingStart="20dp"
+            android:paddingTop="16dp"
+            android:gravity="center_vertical"/>
 
         <EditText
             android:id="@+id/ET_grpName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginStart="16dp"
             android:layout_weight="1"
             android:ems="10"
             android:hint="모임 이름 (2글자 이상)"
             android:maxLength="10"
             android:singleLine="true"/>
+
     </LinearLayout>
 
 </android.support.constraint.ConstraintLayout>
