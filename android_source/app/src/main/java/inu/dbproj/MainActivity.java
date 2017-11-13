@@ -30,7 +30,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         // 타이틀 변경
-        setTitle("모임");
+        setTitle("   모임");
         //그룹 리스트뷰와 어뎁터 생성.
         grpadapter = new GrpListViewAdapter();
         grpListView = (ListView) findViewById(R.id.listvw);

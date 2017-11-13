@@ -7,6 +7,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -43,6 +44,56 @@ public class GrpListActivity extends AppCompatActivity {
                 showRelGUDialog();
             }
         });
+        ImageButton removeImgBtn = (ImageButton)findViewById(R.id.imgBtnRemoveUser);
+        removeImgBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showdelDialog();
+            }
+        });
+    }
+    private void showdelDialog() {
+        LayoutInflater inflater = getLayoutInflater();
+        View v = inflater.inflate(android.R.layout.list_content,null);
+        final Dialog dialog = new Dialog(this);
+        final String data[][] = dbhelper.getUserWithGroup(Integer.parseInt(grpValues[0]));
+        ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1);
+        ListView lv;
+        if(data == null) {
+            AlertDialog.Builder nulldialog = new AlertDialog.Builder(this);
+            nulldialog.setTitle("인원 내보내기");
+            nulldialog.setMessage("모임에서 내보낼 인원이 없습니다.");
+            nulldialog.setPositiveButton("확인",null);
+            nulldialog.show();
+            drawList();
+        } else {
+            int count = data.length;
+            for(int i = 0 ; i < count ; i++) {
+                adapter.add(""+data[i][1]);
+                Log.v("데이터",i+"이름 : "+data[i][0]);
+            }
+            lv = (ListView)v.findViewById(android.R.id.list);
+            lv.setAdapter(adapter);
+            dialog.setTitle("인원 내보내기");
+            dialog.setContentView(v);
+            lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    dbhelper.deleteRelationGU(Integer.parseInt(grpValues[0]),Integer.parseInt(data[position][0]));
+                    dialog.dismiss();
+                    drawList();
+                }
+            });
+
+            dialog.show();
+        }
+
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        drawList();
     }
 
     private void showRelGUDialog() {
@@ -131,19 +182,13 @@ public class GrpListActivity extends AppCompatActivity {
     }
     private void drawList() {
         ArrayList<UserData> Groups = setGroups(Integer.parseInt(grpValues[0]));
-
+        TextView nullTV = (TextView)findViewById(R.id.nullTV);
         if(Groups == null) {
-            /*
-            String empty[] = {"그룹이 없습니다. 그룹을 추가하세요"};
-            ArrayAdapter emptyAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, empty);
-            exList.setAdapter(emptyAdapter);
-            exList.setOnGroupClickListener(new ExpandableListView.OnGroupClickListener() {
-                @Override
-                public boolean onGroupClick(ExpandableListView parent, View v, int groupPosition, long id) {
-                    return false;
-                }
-            });*/
+            nullTV.setVisibility(View.VISIBLE);
+            exList.setVisibility(View.INVISIBLE);
         } else {
+            nullTV.setVisibility(View.INVISIBLE);
+            exList.setVisibility(View.VISIBLE);
             final UserDataAdapter adapter = new UserDataAdapter(this, Groups);
             exList.setAdapter(adapter);
             exList.setOnGroupClickListener(new ExpandableListView.OnGroupClickListener() {
@@ -213,6 +258,7 @@ public class GrpListActivity extends AppCompatActivity {
         dbhelper = new DBHelper(this);
         dbhelper.getGrpMemberFromGrpID(intentFromMainActivity.getIntExtra("GrpID", 0), grpValues);
         setTitle(grpValues[1]);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         TextView grpCash = (TextView) findViewById(R.id.textview_cash_activity_grp_list);
         grpCash.setText(dbhelper.getGRPCash(Integer.parseInt(grpValues[0])) + " 원");
         exList  = (ExpandableListView) findViewById(R.id.exlist_userlist_activity_grp_list);
@@ -275,6 +321,9 @@ public class GrpListActivity extends AppCompatActivity {
                     }
                 });
                 builderGrpDelete.show();
+                break;
+            case android.R.id.home :
+                finish();
                 break;
             default:
                 break;

@@ -5,53 +5,94 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="inu.dbproj.GrpListActivity">
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
-        <TextView
-            android:id="@+id/textview_cash_activity_grp_list"
+
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="30dp"
-            android:text="  원"
-            android:textSize="25dp"
-            android:layout_margin="10dp"
-            android:textColor="@android:color/black"
-            android:gravity="right"/>
+            android:layout_height="50dp"
+            android:orientation="horizontal">
+
+            <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_action_add"
+                android:background="#00FF0000"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="16dp"/>
+
+            <TextView
+                android:id="@+id/textview_cash_activity_grp_list"
+                android:layout_gravity="center_vertical"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:gravity="right"
+                android:text="  원"
+                android:layout_margin="10dp"
+                android:textColor="@android:color/black"
+                android:textSize="25dp" />
+        </LinearLayout>
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="72dp"
-            android:orientation="horizontal"
             android:background="#AAAAAA"
+            android:orientation="horizontal"
             android:paddingEnd="16dp">
+
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="72dp"
+                android:layout_weight="1"
                 android:gravity="center_vertical"
                 android:paddingStart="32dp"
                 android:text="모임 소속 인원"
                 android:textColor="@android:color/black"
-                android:textSize="24sp"
-                android:layout_weight="1"/>
+                android:textSize="24sp" />
+
             <ImageButton
                 android:id="@+id/imgBtnUserAdd"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_user_add"
+                android:layout_gravity="center_vertical"
                 android:background="#00FF0000"
-                android:layout_gravity="center_vertical"/>
+                android:src="@drawable/ic_user_add" />
+
+            <ImageButton
+                android:id="@+id/imgBtnRemoveUser"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="16dp"
+                android:background="#00FF0000"
+                android:src="@drawable/ic_action_remove" />
         </LinearLayout>
 
-
-        <ExpandableListView
-            android:id="@+id/exlist_userlist_activity_grp_list"
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1"></ExpandableListView>
+            android:layout_weight="1">
+
+            <TextView
+                android:id="@+id/nullTV"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="16dp"
+                android:text="소속된 인원이 없습니다."
+                android:textSize="16sp" />
+
+            <ExpandableListView
+                android:id="@+id/exlist_userlist_activity_grp_list"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"></ExpandableListView>
+        </RelativeLayout>
+
 
     </LinearLayout>
-
-
 
 
 </android.support.constraint.ConstraintLayout>

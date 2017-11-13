@@ -32,6 +32,9 @@ public class DBHelper extends SQLiteOpenHelper {
     public void insertRelationGU(int gid, int uid) {
         mdatabase.execSQL("INSERT INTO RELATIONGU VALUES ("+uid+","+gid+");");
     }
+    public void deleteRelationGU(int gid, int uid) {
+        mdatabase.execSQL("DELETE FROM RELATIONGU WHERE UId = "+uid+" and GId = "+gid+";");
+    }
 
     public boolean getGrpMemberFromGrpID(int GrpID,String[] Result) {
         Cursor c = mdatabase.rawQuery("select * from GRP where GrpID = "+GrpID,null);
@@ -163,6 +166,23 @@ public class DBHelper extends SQLiteOpenHelper {
     }
     public String[][] getUserWithoutGroup(int gid) {
         Cursor c = mdatabase.rawQuery("select * from USER where UId not in (select UId from RELATIONGU where GId = "+gid+");",null);
+        c.moveToFirst();
+        int count = c.getCount();
+        if(count == 0) return null;
+        else {
+            int i = 0;
+            String[][] data = new String[count][2];
+            while(c.isAfterLast() == false) {
+                data[i][0] = c.getString(0);
+                data[i][1] = c.getString(1);
+                i++;
+                c.moveToNext();
+            }
+            return data;
+        }
+    }
+    public String[][] getUserWithGroup(int gid) {
+        Cursor c = mdatabase.rawQuery("select * from USER where UId in (select UId from RELATIONGU where GId = "+gid+");",null);
         c.moveToFirst();
         int count = c.getCount();
         if(count == 0) return null;
