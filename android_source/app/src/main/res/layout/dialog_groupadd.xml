@@ -24,7 +24,6 @@
             android:layout_marginEnd="16dp"
             android:layout_marginStart="16dp"
             android:layout_weight="1"
-            android:ems="10"
             android:hint="모임 이름 (2글자 이상)"
             android:maxLength="10"
             android:singleLine="true"/>

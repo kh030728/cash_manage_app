@@ -17,6 +17,7 @@
             android:orientation="horizontal">
 
             <ImageButton
+                android:id="@+id/addList"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/ic_action_add"
@@ -70,6 +71,15 @@
                 android:layout_marginStart="16dp"
                 android:background="#00FF0000"
                 android:src="@drawable/ic_action_remove" />
+            <ImageButton
+                android:id="@+id/imgBtnDeleUser"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="16dp"
+                android:background="#00FF0000"
+                android:src="@drawable/ic_action_delete" />
+
         </LinearLayout>
 
         <RelativeLayout

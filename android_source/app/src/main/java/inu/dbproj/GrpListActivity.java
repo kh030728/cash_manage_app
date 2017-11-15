@@ -24,62 +24,83 @@ import android.widget.Toast;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.zip.Inflater;
 
 public class GrpListActivity extends AppCompatActivity {
     String[] grpValues = new String[3];
     ExpandableListView exList = null;
     DBHelper dbhelper;
     AlertDialog.Builder diaalog;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_grp_list);
-        Log.v("init","시작");
+        Log.v("init", "시작");
         init();
         drawList();
-        ImageButton imgbtn = (ImageButton)findViewById(R.id.imgBtnUserAdd);
+        //exList.deferNotifyDataSetChanged();
+        ImageButton imgbtn = (ImageButton) findViewById(R.id.imgBtnUserAdd);
         imgbtn.setOnClickListener(new ImageButton.OnClickListener() {
             @Override
             public void onClick(View v) {
                 showRelGUDialog();
             }
         });
-        ImageButton removeImgBtn = (ImageButton)findViewById(R.id.imgBtnRemoveUser);
+        ImageButton removeImgBtn = (ImageButton) findViewById(R.id.imgBtnRemoveUser);
         removeImgBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 showdelDialog();
             }
         });
+        ImageButton imgbtn2 = (ImageButton) findViewById(R.id.addList);
+        imgbtn2.setOnClickListener(new Button.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showaddListDialog();
+            }
+        });
+        ImageButton imgbtn3 = (ImageButton) findViewById(R.id.imgBtnDeleUser);
+        imgbtn3.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showuserdeletedialog();
+            }
+        });
+
     }
+
     private void showdelDialog() {
         LayoutInflater inflater = getLayoutInflater();
-        View v = inflater.inflate(android.R.layout.list_content,null);
+        View v = inflater.inflate(android.R.layout.list_content, null);
         final Dialog dialog = new Dialog(this);
         final String data[][] = dbhelper.getUserWithGroup(Integer.parseInt(grpValues[0]));
         ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1);
         ListView lv;
-        if(data == null) {
+        if (data == null) {
             AlertDialog.Builder nulldialog = new AlertDialog.Builder(this);
             nulldialog.setTitle("인원 내보내기");
-            nulldialog.setMessage("모임에서 내보낼 인원이 없습니다.");
-            nulldialog.setPositiveButton("확인",null);
+            nulldialog.setMessage("\n모임에서 내보낼 인원이 없습니다.");
             nulldialog.show();
             drawList();
         } else {
             int count = data.length;
-            for(int i = 0 ; i < count ; i++) {
-                adapter.add(""+data[i][1]);
-                Log.v("데이터",i+"이름 : "+data[i][0]);
+            for (int i = 0; i < count; i++) {
+                adapter.add("" + data[i][1]);
+                Log.v("데이터", i + "이름 : " + data[i][0]);
             }
-            lv = (ListView)v.findViewById(android.R.id.list);
+            v = inflater.inflate(R.layout.item_list_and_text, null);
+            lv = (ListView) v.findViewById(R.id.item_list_ListView);
+            TextView tv = (TextView) v.findViewById(R.id.item_list_TextView);
+            tv.setText("인원 내보내기");
             lv.setAdapter(adapter);
-            dialog.setTitle("인원 내보내기");
             dialog.setContentView(v);
             lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    dbhelper.deleteRelationGU(Integer.parseInt(grpValues[0]),Integer.parseInt(data[position][0]));
+                    dbhelper.deleteRelationGU(Integer.parseInt(grpValues[0]), Integer.parseInt(data[position][0]));
+                    dbhelper.deleteList(Integer.parseInt(grpValues[0]), Integer.parseInt(data[position][0]));
                     dialog.dismiss();
                     drawList();
                 }
@@ -88,6 +109,50 @@ public class GrpListActivity extends AppCompatActivity {
             dialog.show();
         }
 
+    }
+
+    private void showuserdeletedialog() {
+        final Dialog dialoog = new Dialog(this);
+        LayoutInflater inflater = getLayoutInflater();
+        View v = inflater.inflate(R.layout.item_list_and_text,null);
+        TextView tv= (TextView)v.findViewById(R.id.item_list_TextView);
+        ListView lv= (ListView)v.findViewById(R.id.item_list_ListView);
+        tv.setText("인원 삭제하기");
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this,android.R.layout.simple_list_item_1);
+        final String data[][] = dbhelper.getAllUser();
+        if(data == null) {
+            adapter.add("등록된 인원이 없습니다.");
+            lv.setOnItemClickListener(null);
+        } else {
+            int count = data.length;
+            for(int i = 0 ; i < count; i++) {
+                adapter.add(data[i][1]);
+            }
+            lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
+                    AlertDialog.Builder aa = new AlertDialog.Builder(parent.getContext());
+                    aa.setTitle("인원 삭제하기");
+                    aa.setMessage("정말로 삭제하시겠습니까?\n삭제된 인원은 복구할 수 없습니다.");
+                    aa.setNegativeButton("취소",null);
+                    aa.setPositiveButton("삭제", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dbhelper.deleteUser(Integer.parseInt(data[position][0]));
+                            dbhelper.deleteRelationGUall(Integer.parseInt(data[position][0]));
+                            drawList();
+                            dialoog.dismiss();
+                        }
+                    });
+                    aa.show();
+                }
+
+            });
+        }
+        //데이터 주입 완료
+        lv.setAdapter(adapter);
+        dialoog.setContentView(v);
+        dialoog.show();
     }
 
     @Override
@@ -96,57 +161,87 @@ public class GrpListActivity extends AppCompatActivity {
         drawList();
     }
 
+    private void showaddListDialog() {
+        final String data[][] = dbhelper.getUserWithGroup(Integer.parseInt(grpValues[0]));
+        Log.v("으아", "" + data);
+        if (data == null) {
+            AlertDialog.Builder dialog = new AlertDialog.Builder(this);
+            dialog.setTitle("내역 추가");
+            dialog.setMessage("모임에 속한 인원이 없습니다.");
+            dialog.setPositiveButton("확인", null);
+            dialog.show();
+        } else {
+            final int count = data.length;
+            final AlertDialog.Builder dialog = new AlertDialog.Builder(this);
+            dialog.setTitle("내역 일괄 추가");
+            LayoutInflater inflate = getLayoutInflater();
+            final View v = inflate.inflate(R.layout.dialog_listadd, null);
+            dialog.setView(v);
+            dialog.setMessage("나누어지는 금액은 백의 자리로 올림합니다.");
+            dialog.setNegativeButton("취소", null);
+            dialog.setPositiveButton("결정", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    EditText etCash = (EditText) v.findViewById(R.id.ET_addListOnGroup);
+                    EditText etContext = (EditText) v.findViewById(R.id.ET_addListContextOnGroup);
+                    int total_cash = Integer.parseInt(etCash.getText().toString());
+                    int cash = total_cash / count;
+                    int celi_cash = cash % 100;
+                    if (celi_cash > 0) {
+                        cash -= celi_cash;
+                        cash += 100;
+                    }
+                    /*여기에 유저한테 cash만큼 리스트 부여*/
+                    for (int i = 0; i < count; i++) {
+                        dbhelper.insertList(Integer.parseInt(grpValues[0]), Integer.parseInt(data[i][0]), etContext.getText().toString(), cash);
+
+                    }
+                    drawList();
+                }
+            });
+            dialog.show();
+
+        }
+    }
+
     private void showRelGUDialog() {
         LayoutInflater inflater = getLayoutInflater();
-        View v = inflater.inflate(android.R.layout.list_content,null);
+        View v = inflater.inflate(R.layout.item_list_and_text, null);
         final Dialog dialog = new Dialog(this);
         final String data[][] = dbhelper.getUserWithoutGroup(Integer.parseInt(grpValues[0]));
         Button btn;
-        ArrayAdapter adapter = new ArrayAdapter(this,android.R.layout.simple_list_item_1);
-        ListView lv;
-        if(data == null) {
-            Log.v("데이터","널이에요");
-            String[] temp = {"등록된 인원이 없습니다."};
-            adapter = new ArrayAdapter(this,android.R.layout.simple_list_item_1,temp);
-            lv = (ListView)v.findViewById(android.R.id.list);
-            lv.setAdapter(adapter);
-            View vv = inflater.inflate(R.layout.activity_grpheader,null);
-            btn = (Button)vv.findViewById(R.id.grpaddbutton);
-            btn.setText("인원 생성 하기");
-            lv.addFooterView(vv);
-            dialog.setTitle("인원 추가");
-            dialog.setContentView(v);
-            //dialog.setNegativeButton("취소", null);
+        ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1);
+        ListView lv = (ListView) v.findViewById(R.id.item_list_ListView);
+        TextView tv = (TextView) v.findViewById(R.id.item_list_TextView);
+        tv.setText("인원 불러오기");
+        if (data == null) {
+            adapter.add("등록된 인원이 없습니다.");
+            //이 위는 데이터 세팅
             lv.setOnItemClickListener(null);
-            dialog.show();
         } else {
-            Log.v("데이터","널아니에요");
             int count = data.length;
-            for(int i = 0 ; i < count ; i++) {
-                Log.v("왠지...",""+i);
-                adapter.add(""+data[i][1]);
-                Log.v("데이터",i+"이름 : "+data[i][0]);
+            for (int i = 0; i < count; i++) {
+                adapter.add("" + data[i][1]);
             }
-            lv = (ListView)v.findViewById(android.R.id.list);
-            View vv = inflater.inflate(R.layout.activity_grpheader,null);
-            btn = (Button)vv.findViewById(R.id.grpaddbutton);
-            btn.setText("인원 생성 하기");
-            lv.setAdapter(adapter);
-            lv.addFooterView(vv);
-            dialog.setTitle("인원 추가");
-            dialog.setContentView(v);
-            //dialog.setNegativeButton("취소", null);
+            //이 위는 데이터 셋팅
             lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    dbhelper.insertRelationGU(Integer.parseInt(grpValues[0]),Integer.parseInt(data[position][0]));
+                    dbhelper.insertRelationGU(Integer.parseInt(grpValues[0]), Integer.parseInt(data[position][0]));
                     drawList();
                     dialog.dismiss();
                 }
             });
-
-            dialog.show();
         }
+        //공통 셋팅
+        lv.setAdapter(adapter);
+        View vv = inflater.inflate(R.layout.activity_grpheader, null);
+        btn = (Button) vv.findViewById(R.id.grpaddbutton);
+        btn.setText("인원 생성 하기");
+        lv.addFooterView(vv);
+        dialog.setContentView(v);
+        dialog.show();
+
         btn.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -155,12 +250,13 @@ public class GrpListActivity extends AppCompatActivity {
             }
         });
     }
+
     private void userAddDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         LayoutInflater inflater = getLayoutInflater();
-        View v = inflater.inflate(R.layout.dialog_groupadd,null);
+        View v = inflater.inflate(R.layout.dialog_groupadd, null);
         builder.setTitle("인원 생성");
-        final EditText editText = (EditText)v.findViewById(R.id.ET_grpName);
+        final EditText editText = (EditText) v.findViewById(R.id.ET_grpName);
         editText.setHint("인원 이름 (2글자 이상)");
 
         builder.setView(v);
@@ -168,35 +264,38 @@ public class GrpListActivity extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 String grpName = editText.getText().toString();
-                if(grpName.length() < 2) {
-                    Toast.makeText(getApplicationContext(),"인원의 이름을 두글자 이상으로 입력해주세요.",Toast.LENGTH_SHORT).show();
-                }else {
+                if (grpName.length() < 2) {
+                    Toast.makeText(getApplicationContext(), "인원의 이름을 두글자 이상으로 입력해주세요.", Toast.LENGTH_SHORT).show();
+                } else {
                     dbhelper.insertUSER(grpName);
-                    Toast.makeText(getApplicationContext(),"인원이 추가되었습니다.",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "인원이 추가되었습니다. \n 다시 눌러 모임에 추가하세요.", Toast.LENGTH_SHORT).show();
                 }
             }
         });
-        builder.setNegativeButton("취소",null);
+        builder.setNegativeButton("취소", null);
         builder.show();
 
     }
-    private void drawList() {
+
+    public void drawList() {
+        TextView grpCash = (TextView) findViewById(R.id.textview_cash_activity_grp_list);
+        grpCash.setText(dbhelper.getGRPCash(Integer.parseInt(grpValues[0])) + " 원");
         ArrayList<UserData> Groups = setGroups(Integer.parseInt(grpValues[0]));
-        TextView nullTV = (TextView)findViewById(R.id.nullTV);
-        if(Groups == null) {
+        TextView nullTV = (TextView) findViewById(R.id.nullTV);
+        if (Groups == null) {
             nullTV.setVisibility(View.VISIBLE);
             exList.setVisibility(View.INVISIBLE);
         } else {
             nullTV.setVisibility(View.INVISIBLE);
             exList.setVisibility(View.VISIBLE);
-            final UserDataAdapter adapter = new UserDataAdapter(this, Groups);
+            final UserDataAdapter adapter = new UserDataAdapter(this, Groups, this);
             exList.setAdapter(adapter);
             exList.setOnGroupClickListener(new ExpandableListView.OnGroupClickListener() {
                 @Override
                 public boolean onGroupClick(ExpandableListView parent, View v, int groupPosition, long id) {
-                    if(adapter.mUserData.get(groupPosition).cashListData==null) {
+                    if (adapter.mUserData.get(groupPosition).cashListData == null) {
 
-                    }else {
+                    } else {
                         if (parent.isGroupExpanded(groupPosition)) {
                             parent.collapseGroup(groupPosition);
                         } else {
@@ -231,23 +330,26 @@ public class GrpListActivity extends AppCompatActivity {
     }
 
     private UserData setGroupData(int uid, int gid) {
-        Log.v("setGroupData","시작");
+        Log.v("setGroupData", "시작");
         String temp[] = dbhelper.getUserData(uid);
-        Log.v("getUserData","완료");
-        Log.v("temp",temp+" ");
-        ArrayList<UserCashListData> ChildsTemp = setChildsData(uid,gid);
-        UserData Group = new UserData(uid,temp[1],ChildsTemp);
+        Log.v("누구냐", temp[0] + "  " + temp[1] + "   " + uid + "   " + gid);
+        int cash = dbhelper.getUserCash(uid, gid);
+        Log.v("getUserData", "완료");
+        Log.v("temp", temp + " ");
+        ArrayList<UserCashListData> ChildsTemp = setChildsData(uid, gid);
+        UserData Group = new UserData(uid, temp[1], cash, ChildsTemp);
         return Group;
     }
+
     private ArrayList<UserData> setGroups(int gid) {
         int[] temp = dbhelper.getRelationGU(gid);
-        if(temp == null) {
+        if (temp == null) {
             return null;
         } else {
             ArrayList<UserData> grpsTemp = new ArrayList<>();
             int count = temp.length;
-            for(int i = 0; i < count ; i++) {
-                grpsTemp.add(setGroupData(temp[i],gid));
+            for (int i = 0; i < count; i++) {
+                grpsTemp.add(setGroupData(temp[i], gid));
             }
             return grpsTemp;
         }
@@ -261,8 +363,8 @@ public class GrpListActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         TextView grpCash = (TextView) findViewById(R.id.textview_cash_activity_grp_list);
         grpCash.setText(dbhelper.getGRPCash(Integer.parseInt(grpValues[0])) + " 원");
-        exList  = (ExpandableListView) findViewById(R.id.exlist_userlist_activity_grp_list);
-        Log.v("init","완료");
+        exList = (ExpandableListView) findViewById(R.id.exlist_userlist_activity_grp_list);
+        Log.v("init", "완료");
     }
 
     //액션바 매뉴구성과 클릭
@@ -322,7 +424,7 @@ public class GrpListActivity extends AppCompatActivity {
                 });
                 builderGrpDelete.show();
                 break;
-            case android.R.id.home :
+            case android.R.id.home:
                 finish();
                 break;
             default:

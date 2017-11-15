@@ -38,6 +38,7 @@ public class MainActivity extends AppCompatActivity {
         View footer = getLayoutInflater().inflate(R.layout.activity_grpheader,null,false);
         grpListView.addFooterView(footer);
         Button grpaddbuton = (Button)footer.findViewById(R.id.grpaddbutton);
+
         grpaddbuton.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -115,15 +116,11 @@ public class MainActivity extends AppCompatActivity {
                 }else {
                     dbHelper.insertGrp(grpName);
                     drawListView();
+
                 }
             }
         });
-        builder.setNegativeButton("취소", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-
-            }
-        });
+        builder.setNegativeButton("취소", null);
         builder.show();
     }
 

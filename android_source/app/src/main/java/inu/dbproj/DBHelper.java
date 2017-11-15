@@ -15,40 +15,62 @@ public class DBHelper extends SQLiteOpenHelper {
     SQLiteDatabase mdatabase;
 
     public DBHelper(Context context) {
-        super(context, dbname, null, 6);
+        super(context, dbname, null, 10);
         mdatabase = this.getWritableDatabase();
     }
 
-    public void renameGrp(String name,int GrpID) {
-        mdatabase.execSQL("update GRP set GrpName ='"+name+"' where GrpID = "+GrpID+";");
+    public void renameGrp(String name, int GrpID) {
+        mdatabase.execSQL("update GRP set GrpName ='" + name + "' where GrpID = " + GrpID + ";");
     }
+
+    //ListID GrpID UId ListContext ListCash ListCheck
+    public void insertList(int GrpID, int UId, String ListContext, int ListCash) {
+        mdatabase.execSQL("INSERT INTO LIST VALUES(null ," + GrpID + ", " + UId + " , '" + ListContext + "' , " + ListCash + ", 0);");
+    }
+
+    public void updateCheckList(int ListID, int flag) {
+        mdatabase.execSQL("update LIST set ListCheck = " + flag + " where ListID = " + ListID + ";");
+    }
+
 
     public void insertGrp(String name) {
-        mdatabase.execSQL("INSERT INTO GRP VALUES (null,'"+name+"');");
-    }
-    public void insertUSER(String name) {
-        mdatabase.execSQL("INSERT INTO USER VALUES (null,'"+name+"');");
-    }
-    public void insertRelationGU(int gid, int uid) {
-        mdatabase.execSQL("INSERT INTO RELATIONGU VALUES ("+uid+","+gid+");");
-    }
-    public void deleteRelationGU(int gid, int uid) {
-        mdatabase.execSQL("DELETE FROM RELATIONGU WHERE UId = "+uid+" and GId = "+gid+";");
+        mdatabase.execSQL("INSERT INTO GRP VALUES (null,'" + name + "');");
     }
 
-    public boolean getGrpMemberFromGrpID(int GrpID,String[] Result) {
-        Cursor c = mdatabase.rawQuery("select * from GRP where GrpID = "+GrpID,null);
+    public void insertUSER(String name) {
+        mdatabase.execSQL("INSERT INTO USER VALUES (null,'" + name + "');");
+    }
+
+    public void insertRelationGU(int gid, int uid) {
+        mdatabase.execSQL("INSERT INTO RELATIONGU VALUES (" + uid + "," + gid + ");");
+    }
+
+    public void deleteRelationGU(int gid, int uid) {
+        mdatabase.execSQL("DELETE FROM RELATIONGU WHERE UId = " + uid + " and GId = " + gid + ";");
+    }
+    public void deleteRelationGUall(int uid) {
+        mdatabase.execSQL("DELETE FROM RELATIONGU WHERE UId = " + uid + ";");
+    }
+    public void deleteList(int gid, int uid) {
+        mdatabase.execSQL("DELETE FROM LIST WHERE UId = " + uid + " and GrpID = " + gid + ";");
+    }
+    public void deleteUser(int uid) {
+        mdatabase.execSQL("DELETE FROM USER WHERE UId = " + uid +";");
+    }
+
+    public boolean getGrpMemberFromGrpID(int GrpID, String[] Result) {
+        Cursor c = mdatabase.rawQuery("select * from GRP where GrpID = " + GrpID, null);
         c.moveToFirst();
-        if(c.getString(0)!=null) {
+        if (c.getString(0) != null) {
             Result[0] = c.getString(0);
             Result[1] = c.getString(1);
-            Result[2] = getGRPCash(Integer.parseInt(Result[0]))+"";
+            Result[2] = getGRPCash(Integer.parseInt(Result[0])) + "";
             return true;
         } else return false;
     }
 
     public void deleteGRPMember(int id) {
-        mdatabase.execSQL("delete from GRP where GrpID ="+id+";");
+        mdatabase.execSQL("delete from GRP where GrpID =" + id + ";");
     }
 
     public String[][] getGRPAllMember() {
@@ -56,12 +78,12 @@ public class DBHelper extends SQLiteOpenHelper {
         Cursor c = mdatabase.rawQuery("SELECT * FROM GRP", null);
         c.moveToFirst();
         int count = c.getCount();
-        if(count != 0) {
+        if (count != 0) {
             String Result[][] = new String[count][2];
             int i = 0;
             while (c.isAfterLast() == false) {
-                Result[i][0] = ""+c.getString(0);
-                Result[i][1] = ""+c.getString(1);
+                Result[i][0] = "" + c.getString(0);
+                Result[i][1] = "" + c.getString(1);
                 i++;
                 c.moveToNext();
             }
@@ -81,13 +103,13 @@ public class DBHelper extends SQLiteOpenHelper {
     *  단 check 가 false 인 것만 가져온다.
     */
     public String[][] getListaDataForGroup(int uid, int gid) {
-        Cursor c = mdatabase.rawQuery("select * from LIST where UId = "+uid+" AND GrpID = "+gid+" AND ListCheck = 0;",null);
+        Cursor c = mdatabase.rawQuery("select * from LIST where UId = " + uid + " AND GrpID = " + gid + " AND ListCheck = 0;", null);
         c.moveToFirst();
         int count = c.getCount();
-        if(count != 0) {
+        if (count != 0) {
             int i = 0;
             String[][] result = new String[count][6];
-            while(c.isAfterLast() == false) {
+            while (c.isAfterLast() == false) {
                 //6개
                 result[i][0] = c.getString(0);
                 result[i][1] = c.getString(1);
@@ -101,14 +123,15 @@ public class DBHelper extends SQLiteOpenHelper {
             return result;
         } else return null;
     }
+
     public String[][] getListaData(int uid, int gid) {
-        Cursor c = mdatabase.rawQuery("select * from LIST where UId = "+uid+" AND GrpID = "+gid+";",null);
+        Cursor c = mdatabase.rawQuery("select * from LIST where UId = " + uid + " AND GrpID = " + gid + " ORDER BY ListCheck ASC;", null);
         c.moveToFirst();
         int count = c.getCount();
-        if(count != 0) {
+        if (count != 0) {
             int i = 0;
             String[][] result = new String[count][6];
-            while(c.isAfterLast() == false) {
+            while (c.isAfterLast() == false) {
                 //6개
                 result[i][0] = c.getString(0);
                 result[i][1] = c.getString(1);
@@ -122,30 +145,33 @@ public class DBHelper extends SQLiteOpenHelper {
             return result;
         } else return null;
     }
+
     public String[] getUserData(int uid) {
-        Cursor c = mdatabase.rawQuery("select * from USER where UId = "+uid+";",null);
+        Cursor c = mdatabase.rawQuery("select * from USER where UId = " + uid + ";", null);
         c.moveToFirst();
-        if(c.getCount() != 0) {
+        if (c.getCount() != 0) {
             String[] temp = new String[2];
             temp[0] = c.getString(0);//uid
             temp[1] = c.getString(1);//name
             return temp;
         } else return null;
     }
+
     public int getUidForName(String name) {
-        Cursor c = mdatabase.rawQuery("select * from USER;",null);
+        Cursor c = mdatabase.rawQuery("select * from USER;", null);
         c.moveToFirst();
         return Integer.parseInt(c.getString(0));
     }
+
     public int[] getRelationGU(int gid) {
-        Cursor c = mdatabase.rawQuery("select * from RELATIONGU where GId = "+gid+";",null);
+        Cursor c = mdatabase.rawQuery("select * from RELATIONGU where GId = " + gid + ";", null);
         int count = c.getCount();
         c.moveToFirst();
-        if(count == 0) return null;
+        if (count == 0) return null;
         else {
             int i = 0;
             int[] temp = new int[count];
-            while(c.isAfterLast() == false) {
+            while (c.isAfterLast() == false) {
                 temp[i] = Integer.parseInt(c.getString(0));
                 i++;
                 c.moveToNext();
@@ -153,10 +179,11 @@ public class DBHelper extends SQLiteOpenHelper {
             return temp;
         }
     }
+
     public int getGRPCash(int GrpId) {
-        Cursor c = mdatabase.rawQuery("select SUM(ListCash) from LIST where GrpID ="+GrpId+" AND ListCheck = 0;",null);
+        Cursor c = mdatabase.rawQuery("select SUM(ListCash) from LIST where GrpID =" + GrpId + " AND ListCheck = 0;", null);
         c.moveToFirst();
-        if(c.getString(0) != null) {
+        if (c.getString(0) != null) {
             Log.v("캐쉬 값", c.getString(0) + "");
 
             return Integer.parseInt(c.getString(0));
@@ -164,15 +191,16 @@ public class DBHelper extends SQLiteOpenHelper {
             return 0;
         }
     }
+
     public String[][] getUserWithoutGroup(int gid) {
-        Cursor c = mdatabase.rawQuery("select * from USER where UId not in (select UId from RELATIONGU where GId = "+gid+");",null);
+        Cursor c = mdatabase.rawQuery("select * from USER where UId not in (select UId from RELATIONGU where GId = " + gid + ");", null);
         c.moveToFirst();
         int count = c.getCount();
-        if(count == 0) return null;
+        if (count == 0) return null;
         else {
             int i = 0;
             String[][] data = new String[count][2];
-            while(c.isAfterLast() == false) {
+            while (c.isAfterLast() == false) {
                 data[i][0] = c.getString(0);
                 data[i][1] = c.getString(1);
                 i++;
@@ -181,23 +209,53 @@ public class DBHelper extends SQLiteOpenHelper {
             return data;
         }
     }
+
     public String[][] getUserWithGroup(int gid) {
-        Cursor c = mdatabase.rawQuery("select * from USER where UId in (select UId from RELATIONGU where GId = "+gid+");",null);
+        Cursor c = mdatabase.rawQuery("select * from USER where UId in (select UId from RELATIONGU where GId = " + gid + ");", null);
         c.moveToFirst();
         int count = c.getCount();
-        if(count == 0) return null;
+        if (count == 0) return null;
         else {
-            int i = 0;
+            int s = 0;
             String[][] data = new String[count][2];
-            while(c.isAfterLast() == false) {
-                data[i][0] = c.getString(0);
-                data[i][1] = c.getString(1);
-                i++;
+            while (c.isAfterLast() == false) {
+                data[s][0] = c.getString(0);
+                data[s][1] = c.getString(1);
+                s++;
                 c.moveToNext();
             }
             return data;
         }
     }
+    public String[][] getAllUser() {
+        Cursor c = mdatabase.rawQuery("select * from USER;", null);
+        c.moveToFirst();
+        int count = c.getCount();
+        if (count == 0) return null;
+        else {
+            int s = 0;
+            String[][] data = new String[count][2];
+            while (c.isAfterLast() == false) {
+                data[s][0] = c.getString(0);
+                data[s][1] = c.getString(1);
+                s++;
+                c.moveToNext();
+            }
+            return data;
+        }
+    }
+
+    public int getUserCash(int Uid, int Gid) {
+        Cursor c = mdatabase.rawQuery("select SUM(ListCash) FROM LIST WHERE UId = " + Uid + " AND GrpID = " + Gid + " AND ListCheck = 0;", null);
+        c.moveToFirst();
+        if (c.getString(0) == null) {
+            return 0;
+        }
+        int a = Integer.parseInt(c.getString(0));
+        return a;
+
+    }
+
     @Override
     public void onCreate(SQLiteDatabase db) {
         Log.v(getClass().getName(), "onCreate 실행");
@@ -231,10 +289,11 @@ public class DBHelper extends SQLiteOpenHelper {
         Log.v(getClass().getName(), "RELATIONGU 테이블 생성...... 완료");
         //List 테이블 생성
         Log.v(getClass().getName(), "LIST 테이블 생성......");
+        //ListID GrpID UId ListContext ListCash ListCheck
         db.execSQL("CREATE TABLE LIST(ListID INTEGER PRIMARY KEY AUTOINCREMENT," +
                 " GrpID INTEGER REFERENCES GRP(GrpID) ON UPDATE CASCADE," +
-                "UId INTEGER REFERENCES USER(UId) ON UPDATE SET NULL," +
-                "ListContext VARCHAR(30)," +
+                "UId INTEGER REFERENCES USER(UId) ON UPDATE CASCADE," +
+                "ListContext VARCHAR(15)," +
                 "ListCash INTEGER NOT NULL," +
                 "ListCheck INTEGER NOT NULL DEFAULT 0);");
         Log.v(getClass().getName(), "LIST 테이블 생성...... 완료");

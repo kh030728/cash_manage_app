@@ -11,10 +11,21 @@ import java.util.ArrayList;
 public class UserData {
     int uid = 0;
     String uName ="";
+
+    public int getTotalcash() {
+        return totalcash;
+    }
+
+    public void setTotalcash(int totalcash) {
+        this.totalcash = totalcash;
+    }
+
+    int totalcash;
     ArrayList<UserCashListData> cashListData;
-    public UserData(int uid, String uName, ArrayList<UserCashListData> data) {
+    public UserData(int uid, String uName,int totalcash, ArrayList<UserCashListData> data) {
         this.uid = uid;
         this.uName = uName;
+        this.totalcash = totalcash;
         cashListData = data;
     }
     public void setUid(int uid) {this.uid=uid;}
