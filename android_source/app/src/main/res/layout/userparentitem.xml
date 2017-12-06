@@ -37,15 +37,6 @@
             android:textColor="@android:color/black"
             android:textSize="18sp" />
 
-        <ImageButton
-            android:id="@+id/downbtn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_marginStart="8dp"
-            android:background="#00ff0000"
-            android:src="@drawable/ic_action_next" />
-
 
     </LinearLayout>
 </android.support.constraint.ConstraintLayout>

@@ -19,45 +19,16 @@ public class DBHelper extends SQLiteOpenHelper {
         mdatabase = this.getWritableDatabase();
     }
 
-    public void renameGrp(String name, int GrpID) {
-        mdatabase.execSQL("update GRP set GrpName ='" + name + "' where GrpID = " + GrpID + ";");
-    }
-
-    //ListID GrpID UId ListContext ListCash ListCheck
-    public void insertList(int GrpID, int UId, String ListContext, int ListCash) {
-        mdatabase.execSQL("INSERT INTO LIST VALUES(null ," + GrpID + ", " + UId + " , '" + ListContext + "' , " + ListCash + ", 0);");
-    }
-
-    public void updateCheckList(int ListID, int flag) {
-        mdatabase.execSQL("update LIST set ListCheck = " + flag + " where ListID = " + ListID + ";");
-    }
-
-
-    public void insertGrp(String name) {
-        mdatabase.execSQL("INSERT INTO GRP VALUES (null,'" + name + "');");
-    }
-
-    public void insertUSER(String name) {
-        mdatabase.execSQL("INSERT INTO USER VALUES (null,'" + name + "');");
-    }
-
-    public void insertRelationGU(int gid, int uid) {
-        mdatabase.execSQL("INSERT INTO RELATIONGU VALUES (" + uid + "," + gid + ");");
-    }
-
-    public void deleteRelationGU(int gid, int uid) {
-        mdatabase.execSQL("DELETE FROM RELATIONGU WHERE UId = " + uid + " and GId = " + gid + ";");
-    }
-    public void deleteRelationGUall(int uid) {
-        mdatabase.execSQL("DELETE FROM RELATIONGU WHERE UId = " + uid + ";");
-    }
-    public void deleteList(int gid, int uid) {
-        mdatabase.execSQL("DELETE FROM LIST WHERE UId = " + uid + " and GrpID = " + gid + ";");
-    }
-    public void deleteUser(int uid) {
-        mdatabase.execSQL("DELETE FROM USER WHERE UId = " + uid +";");
-    }
-
+    public void renameGrp(String name, int GrpID) {mdatabase.execSQL("update GRP set GrpName ='" + name + "' where GrpID = " + GrpID + ";");}
+    public void insertList(int GrpID, int UId, String ListContext, int ListCash) {mdatabase.execSQL("INSERT INTO LIST VALUES(null ," + GrpID + ", " + UId + " , '" + ListContext + "' , " + ListCash + ", 0);");}
+    public void updateCheckList(int ListID, int flag) {mdatabase.execSQL("update LIST set ListCheck = " + flag + " where ListID = " + ListID + ";");}
+    public void insertGrp(String name) {mdatabase.execSQL("INSERT INTO GRP VALUES (null,'" + name + "');");}
+    public void insertUSER(String name) {mdatabase.execSQL("INSERT INTO USER VALUES (null,'" + name + "');");}
+    public void insertRelationGU(int gid, int uid) {mdatabase.execSQL("INSERT INTO RELATIONGU VALUES (" + uid + "," + gid + ");");}
+    public void deleteRelationGU(int gid, int uid) {mdatabase.execSQL("DELETE FROM RELATIONGU WHERE UId = " + uid + " and GId = " + gid + ";");}
+    public void deleteRelationGUall(int uid) {mdatabase.execSQL("DELETE FROM RELATIONGU WHERE UId = " + uid + ";");}
+    public void deleteList(int gid, int uid) {mdatabase.execSQL("DELETE FROM LIST WHERE UId = " + uid + " and GrpID = " + gid + ";");}
+    public void deleteUser(int uid) {mdatabase.execSQL("DELETE FROM USER WHERE UId = " + uid +";");}
     public boolean getGrpMemberFromGrpID(int GrpID, String[] Result) {
         Cursor c = mdatabase.rawQuery("select * from GRP where GrpID = " + GrpID, null);
         c.moveToFirst();
@@ -68,11 +39,7 @@ public class DBHelper extends SQLiteOpenHelper {
             return true;
         } else return false;
     }
-
-    public void deleteGRPMember(int id) {
-        mdatabase.execSQL("delete from GRP where GrpID =" + id + ";");
-    }
-
+    public void deleteGRPMember(int id) {mdatabase.execSQL("delete from GRP where GrpID =" + id + ";");}
     public String[][] getGRPAllMember() {
         Log.v("grp 조회", "시작");
         Cursor c = mdatabase.rawQuery("SELECT * FROM GRP", null);
@@ -97,11 +64,6 @@ public class DBHelper extends SQLiteOpenHelper {
 
 
     }
-
-    /*
-    *  테이블의 LIST의 조건을 불러온다.
-    *  단 check 가 false 인 것만 가져온다.
-    */
     public String[][] getListaDataForGroup(int uid, int gid) {
         Cursor c = mdatabase.rawQuery("select * from LIST where UId = " + uid + " AND GrpID = " + gid + " AND ListCheck = 0;", null);
         c.moveToFirst();
@@ -123,29 +85,6 @@ public class DBHelper extends SQLiteOpenHelper {
             return result;
         } else return null;
     }
-
-    public String[][] getListaData(int uid, int gid) {
-        Cursor c = mdatabase.rawQuery("select * from LIST where UId = " + uid + " AND GrpID = " + gid + " ORDER BY ListCheck ASC;", null);
-        c.moveToFirst();
-        int count = c.getCount();
-        if (count != 0) {
-            int i = 0;
-            String[][] result = new String[count][6];
-            while (c.isAfterLast() == false) {
-                //6개
-                result[i][0] = c.getString(0);
-                result[i][1] = c.getString(1);
-                result[i][2] = c.getString(2);
-                result[i][3] = c.getString(3);
-                result[i][4] = c.getString(4);
-                result[i][5] = c.getString(5);
-                c.moveToNext();
-                i++;
-            }
-            return result;
-        } else return null;
-    }
-
     public String[] getUserData(int uid) {
         Cursor c = mdatabase.rawQuery("select * from USER where UId = " + uid + ";", null);
         c.moveToFirst();
@@ -156,13 +95,6 @@ public class DBHelper extends SQLiteOpenHelper {
             return temp;
         } else return null;
     }
-
-    public int getUidForName(String name) {
-        Cursor c = mdatabase.rawQuery("select * from USER;", null);
-        c.moveToFirst();
-        return Integer.parseInt(c.getString(0));
-    }
-
     public int[] getRelationGU(int gid) {
         Cursor c = mdatabase.rawQuery("select * from RELATIONGU where GId = " + gid + ";", null);
         int count = c.getCount();
@@ -179,7 +111,6 @@ public class DBHelper extends SQLiteOpenHelper {
             return temp;
         }
     }
-
     public int getGRPCash(int GrpId) {
         Cursor c = mdatabase.rawQuery("select SUM(ListCash) from LIST where GrpID =" + GrpId + " AND ListCheck = 0;", null);
         c.moveToFirst();
@@ -191,7 +122,6 @@ public class DBHelper extends SQLiteOpenHelper {
             return 0;
         }
     }
-
     public String[][] getUserWithoutGroup(int gid) {
         Cursor c = mdatabase.rawQuery("select * from USER where UId not in (select UId from RELATIONGU where GId = " + gid + ");", null);
         c.moveToFirst();
@@ -209,7 +139,6 @@ public class DBHelper extends SQLiteOpenHelper {
             return data;
         }
     }
-
     public String[][] getUserWithGroup(int gid) {
         Cursor c = mdatabase.rawQuery("select * from USER where UId in (select UId from RELATIONGU where GId = " + gid + ");", null);
         c.moveToFirst();
@@ -244,7 +173,6 @@ public class DBHelper extends SQLiteOpenHelper {
             return data;
         }
     }
-
     public int getUserCash(int Uid, int Gid) {
         Cursor c = mdatabase.rawQuery("select SUM(ListCash) FROM LIST WHERE UId = " + Uid + " AND GrpID = " + Gid + " AND ListCheck = 0;", null);
         c.moveToFirst();
@@ -256,6 +184,35 @@ public class DBHelper extends SQLiteOpenHelper {
 
     }
 
+
+
+
+    public String[][] getListaData(int uid, int gid) {
+        Cursor c = mdatabase.rawQuery("select * from LIST where UId = " + uid + " AND GrpID = " + gid + " ORDER BY ListCheck ASC;", null);
+        c.moveToFirst();
+        int count = c.getCount();
+        if (count != 0) {
+            int i = 0;
+            String[][] result = new String[count][6];
+            while (c.isAfterLast() == false) {
+                //6개
+                result[i][0] = c.getString(0);
+                result[i][1] = c.getString(1);
+                result[i][2] = c.getString(2);
+                result[i][3] = c.getString(3);
+                result[i][4] = c.getString(4);
+                result[i][5] = c.getString(5);
+                c.moveToNext();
+                i++;
+            }
+            return result;
+        } else return null;
+    }
+    public int getUidForName(String name) {
+        Cursor c = mdatabase.rawQuery("select * from USER;", null);
+        c.moveToFirst();
+        return Integer.parseInt(c.getString(0));
+    }
     @Override
     public void onCreate(SQLiteDatabase db) {
         Log.v(getClass().getName(), "onCreate 실행");

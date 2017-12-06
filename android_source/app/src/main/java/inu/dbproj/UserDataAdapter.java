@@ -114,10 +114,10 @@ public class UserDataAdapter extends BaseExpandableListAdapter {
         }
         TextView name = (TextView)view.findViewById(R.id.Tv_name_userparentitem);
         TextView cash = (TextView)view.findViewById(R.id.Tv_cash_userparentitem);
-        ImageButton imgview = (ImageButton) view.findViewById(R.id.downbtn);
+        //ImageButton imgview = (ImageButton) view.findViewById(R.id.downbtn);
         name.setText(mUserData.get(groupPosition).getuName());
         cash.setText(mUserData.get(groupPosition).getTotalcash()+"원");
-        imgview.setFocusable(false);
+        //imgview.setFocusable(false);
 
         return view;
     }
